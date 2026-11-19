@@ -4,183 +4,188 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vepro: Party & Voice Room</title>
-  <script src="https://tailwindcss.com"></script>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
     body {
-      background: radial-gradient(circle at top, #1e1035, #090514 80%);
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top, #241242, #090514 85%);
+      color: #ffffff;
       min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
       overflow-x: hidden;
+    }
+    .hidden { display: none !important; }
+    .glass {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #00d2ff, #7928ca);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      width: 100%;
+      cursor: pointer;
+    }
+    .btn-gold {
+      background: linear-gradient(90deg, #fbbf24, #f59e0b);
+      color: #000;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+    input[type="text"], input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: white;
+      font-size: 15px;
+      margin-bottom: 12px;
+      outline: none;
     }
     /* Breathing Glow Animation */
     @keyframes breathingGlow {
       0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.8), 0 0 12px rgba(168, 85, 247, 0.6); transform: scale(1); }
-      50% { box-shadow: 0 0 0 12px rgba(0, 242, 254, 0), 0 0 24px rgba(168, 85, 247, 0.9); transform: scale(1.05); }
+      50% { box-shadow: 0 0 0 12px rgba(0, 242, 254, 0), 0 0 24px rgba(168, 85, 247, 0.9); transform: scale(1.06); }
       100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0), 0 0 12px rgba(168, 85, 247, 0.6); transform: scale(1); }
     }
     .breathing-ring {
       animation: breathingGlow 1.6s infinite ease-in-out;
-      border: 2.5px solid #00f2fe !important;
+      border: 3px solid #00f2fe !important;
     }
-    .glass {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+    /* Screen 1: Auth */
+    #authScreen { padding: 30px 20px; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; }
+    .logo-circle {
+      width: 85px; height: 85px; margin: 0 auto 15px; border-radius: 50%;
+      background: linear-gradient(135deg, #00f2fe, #7928ca);
+      display: flex; align-items: center; justify-content: center; font-size: 40px;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
     }
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
+    .tab-row { display: flex; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; background: transparent; color: #aaa; font-weight: bold; font-size: 14px; }
+    .tab-btn.active { background: #7928ca; color: white; }
+
+    /* Screen 2: Lobby */
+    #lobbyScreen { padding: 18px 16px 90px; }
+    .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .room-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .room-card {
+      padding: 14px; border-radius: 18px;
+      background: linear-gradient(135deg, #3b1d6e, #1a103c);
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer;
     }
-    .emoji-float {
-      position: fixed;
-      bottom: 85px;
-      right: 30px;
-      font-size: 2rem;
-      animation: floatUp 1.5s ease-out forwards;
-      pointer-events: none;
-      z-index: 60;
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: rgba(15, 8, 34, 0.95);
+      border-top: 1px solid rgba(168, 85, 247, 0.3);
+      display: flex; justify-content: space-around; align-items: center; padding: 10px 0; z-index: 50;
     }
+    .nav-item { background: none; border: none; color: #ccc; font-size: 12px; font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+
+    /* Screen 3: Profile */
+    #profileScreen { padding: 18px 16px 90px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+    /* Screen 4: Party Room */
+    #roomScreen { padding: 16px; display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; }
+    .host-box { display: flex; flex-direction: column; align-items: center; margin: 12px 0 20px; position: relative; }
+    .avatar-lg { width: 82px; height: 82px; border-radius: 50%; background: #2d1654; padding: 3px; }
+    .seats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .seat-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+    .avatar-sm { width: 58px; height: 58px; border-radius: 50%; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #aaa; border: 1px solid rgba(255,255,255,0.15); }
+    .chat-box { height: 160px; overflow-y: auto; padding: 12px; font-size: 13px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .controls-bar { display: flex; gap: 8px; align-items: center; }
+    .circle-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; font-size: 18px; flex-shrink: 0; }
+
+    /* Modal & Floating Emoji */
+    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-130px) scale(1.6); } }
+    .emoji-float { position: fixed; bottom: 85px; right: 30px; font-size: 32px; animation: floatUp 1.5s ease-out forwards; pointer-events: none; z-index: 99; }
   </style>
 </head>
-<body class="max-w-md mx-auto relative shadow-2xl border-x border-purple-900/40">
+<body>
 
-  <!-- ========================================== -->
-  <!-- SCREEN 1: LOGIN & SIGN UP                  -->
-  <!-- ========================================== -->
-  <div id="authScreen" class="p-6 flex flex-col justify-center min-h-screen">
-    <div class="text-center mb-8">
-      <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-cyan-400 to-purple-600 flex items-center justify-center text-3xl font-bold shadow-lg shadow-cyan-500/30 mb-3">
-        🎙️
-      </div>
-      <h1 class="text-2xl font-extrabold bg-gradient-to-r from-cyan-300 via-purple-300 to-amber-300 bg-clip-text text-transparent">
-        Vepro: Party & Voice Room
-      </h1>
-      <p class="text-gray-400 text-sm mt-1">Live Group Voice Parties & Hangouts</p>
+  <!-- SCREEN 1: LOGIN & SIGN UP -->
+  <div id="authScreen">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div class="logo-circle">🎙️</div>
+      <h1 style="font-size: 26px; font-weight: 900; color: #67e8f9;">Vepro: Party & Voice Room</h1>
+      <p style="color: #aaa; font-size: 14px; margin-top: 4px;">Live Group Voice Parties & Hangouts</p>
     </div>
 
-    <div class="glass rounded-2xl p-5 space-y-4">
-      <div class="flex bg-black/40 rounded-xl p-1">
-        <button id="loginTab" onclick="toggleAuth('login')" class="w-1/2 py-2 rounded-lg bg-purple-600 font-semibold text-sm">Login</button>
-        <button id="signupTab" onclick="toggleAuth('signup')" class="w-1/2 py-2 rounded-lg text-gray-400 font-semibold text-sm">Sign Up</button>
+    <div class="glass" style="padding: 20px;">
+      <div class="tab-row">
+        <button id="loginTab" class="tab-btn active" onclick="toggleAuth('login')">Login</button>
+        <button id="signupTab" class="tab-btn" onclick="toggleAuth('signup')">Sign Up</button>
       </div>
 
-      <input id="nameInput" type="text" placeholder="Your Nickname" class="hidden w-full p-3 rounded-xl bg-black/50 border border-purple-500/30 text-white focus:outline-none focus:border-cyan-400" />
-      <input id="emailInput" type="email" placeholder="Email Address" class="w-full p-3 rounded-xl bg-black/50 border border-purple-500/30 text-white focus:outline-none focus:border-cyan-400" />
-      <input id="passInput" type="password" placeholder="Password" class="w-full p-3 rounded-xl bg-black/50 border border-purple-500/30 text-white focus:outline-none focus:border-cyan-400" />
+      <input id="nameInput" type="text" placeholder="Your Nickname" class="hidden" />
+      <input id="emailInput" type="email" placeholder="Email Address" />
+      <input id="passInput" type="password" placeholder="Password" />
 
-      <button onclick="handleLogin()" id="authBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 font-bold text-white shadow-lg shadow-purple-600/30 active:scale-95 transition">
-        Login Now
-      </button>
+      <button onclick="handleLogin()" id="authBtn" class="btn-primary">Login Now</button>
 
-      <div class="relative flex py-1 items-center">
-        <div class="flex-grow border-t border-gray-700"></div>
-        <span class="flex-shrink mx-3 text-gray-400 text-xs">OR</span>
-        <div class="flex-grow border-t border-gray-700"></div>
-      </div>
+      <p style="text-align: center; color: #888; font-size: 12px; margin: 14px 0;">— OR —</p>
 
-      <button onclick="guestLogin()" class="w-full py-3 rounded-xl glass font-semibold text-cyan-300 hover:bg-white/10 active:scale-95 transition">
+      <button onclick="guestLogin()" class="btn-primary" style="background: rgba(255,255,255,0.1); border: 1px solid #00f2fe; color: #67e8f9;">
         🚀 Instant Guest Demo Login
       </button>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- SCREEN 2: HOME LOBBY                       -->
-  <!-- ========================================== -->
-  <div id="lobbyScreen" class="hidden p-4 pb-24 min-h-screen">
-    <div class="flex justify-between items-center mb-4">
+  <!-- SCREEN 2: HOME LOBBY -->
+  <div id="lobbyScreen" class="hidden">
+    <div class="top-header">
       <div>
-        <h2 class="text-xl font-extrabold text-cyan-300">Vepro</h2>
-        <p class="text-xs text-gray-400">ID: <span id="userIdDisplay" class="text-purple-300">849201</span> • <span id="userDisplay" class="text-amber-300 font-semibold">Guest</span></p>
+        <h2 style="font-size: 22px; font-weight: 900; color: #67e8f9;">Vepro</h2>
+        <p style="font-size: 12px; color: #bbb;">ID: <span id="userIdDisplay" style="color: #d8b4fe;">849201</span> • <span id="userDisplay" style="color: #fcd34d; font-weight: bold;">Guest</span></p>
       </div>
-      <div class="flex items-center gap-2">
-        <div class="glass px-3 py-1.5 rounded-full text-xs font-bold text-amber-300">🪙 <span id="coinBalance">500</span></div>
-        <button onclick="openProfile()" class="w-9 h-9 rounded-full bg-purple-700 border border-cyan-400 flex items-center justify-center text-sm font-bold">👤</button>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="glass" style="padding: 6px 12px; font-size: 13px; font-weight: bold; color: #fcd34d;">🪙 <span id="coinBalance">500</span></div>
+        <button onclick="openProfile()" style="width: 38px; height: 38px; border-radius: 50%; background: #7928ca; border: 2px solid #00f2fe; color: white; font-size: 16px;">👤</button>
       </div>
     </div>
 
-    <input type="text" placeholder="🔍 Search Room Name or ID..." class="w-full p-3 rounded-xl glass text-sm mb-4 focus:outline-none focus:border-cyan-400" />
+    <input type="text" placeholder="🔍 Search Room Name or ID..." />
 
-    <h3 class="text-sm font-bold text-purple-300 mb-3 uppercase tracking-wider">🔥 Live Party Rooms</h3>
-    <div id="roomGrid" class="grid grid-cols-2 gap-3"></div>
+    <h3 style="font-size: 14px; color: #d8b4fe; margin: 8px 0 12px; letter-spacing: 1px;">🔥 LIVE PARTY ROOMS</h3>
+    <div id="roomGrid" class="room-grid"></div>
 
-    <!-- Bottom Navigation Bar -->
-    <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md glass border-t border-purple-500/30 px-6 py-2.5 flex justify-between items-center z-40">
-      <button onclick="showLobby()" class="flex flex-col items-center text-cyan-300 text-xs font-bold">
-        <span class="text-lg">🏠</span>
-        <span>Rooms</span>
-      </button>
-      <button onclick="openCreateModal()" class="bg-gradient-to-r from-amber-400 to-orange-500 text-black font-extrabold px-5 py-2.5 rounded-full shadow-lg shadow-amber-500/30 text-xs active:scale-95 transition">
-        + Create Room
-      </button>
-      <button onclick="openProfile()" class="flex flex-col items-center text-gray-300 hover:text-cyan-300 text-xs font-bold">
-        <span class="text-lg">👤</span>
-        <span>My Profile</span>
-      </button>
+    <div class="bottom-nav">
+      <button onclick="showLobby()" class="nav-item" style="color: #67e8f9;"><span style="font-size: 20px;">🏠</span><span>Rooms</span></button>
+      <button onclick="openCreateModal()" class="btn-gold">+ Create Room</button>
+      <button onclick="openProfile()" class="nav-item"><span style="font-size: 20px;">👤</span><span>My Profile</span></button>
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- SCREEN 3: MY PROFILE & ADVANCE CONTROLS    -->
-  <!-- ========================================== -->
-  <div id="profileScreen" class="hidden p-4 pb-24 min-h-screen">
-    <div class="flex justify-between items-center mb-5">
-      <button onclick="showLobby()" class="glass px-3 py-1.5 rounded-xl text-xs text-cyan-300 font-bold">← Back</button>
-      <h2 class="text-base font-bold">My Profile</h2>
-      <button onclick="logout()" class="glass px-3 py-1.5 rounded-xl text-xs text-red-400 font-bold">Logout</button>
+  <!-- SCREEN 3: MY PROFILE & ADVANCE CONTROLS -->
+  <div id="profileScreen" class="hidden">
+    <div class="top-header">
+      <button onclick="showLobby()" class="glass" style="padding: 8px 14px; color: #67e8f9; font-weight: bold; font-size: 13px;">← Back</button>
+      <h2 style="font-size: 18px; font-weight: bold;">My Profile</h2>
+      <button onclick="logout()" class="glass" style="padding: 8px 14px; color: #f87171; font-weight: bold; font-size: 13px;">Logout</button>
     </div>
 
-    <!-- User Card -->
-    <div class="glass rounded-2xl p-5 text-center mb-4">
-      <img id="profileAvatar" src="https://dicebear.com" class="w-20 h-20 mx-auto rounded-full bg-purple-900 p-1 border-2 border-cyan-400 mb-2" />
-      <h3 id="profileName" class="text-lg font-extrabold text-white">Vepro User</h3>
-      <p class="text-xs text-gray-400">Vepro ID: <span id="profileId" class="text-cyan-300 font-mono">849201</span></p>
-      <div class="mt-3 inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/40 px-4 py-1.5 rounded-full text-amber-300 text-xs font-bold">
-        <span>🪙 Wallet Balance:</span>
-        <span id="profileCoins">500 Coins</span>
+    <div class="glass" style="padding: 20px; text-align: center; margin-bottom: 16px;">
+      <img id="profileAvatar" src="https://dicebear.com" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #00f2fe; margin-bottom: 10px; background: #2d1654;" />
+      <h3 id="profileName" style="font-size: 20px; font-weight: 800;">Vepro User</h3>
+      <p style="font-size: 13px; color: #aaa; margin-top: 4px;">Vepro ID: <span id="profileId" style="color: #67e8f9;">849201</span></p>
+      <div style="display: inline-block; margin-top: 12px; background: rgba(245, 158, 11, 0.2); border: 1px solid #fbbf24; padding: 6px 16px; border-radius: 20px; color: #fcd34d; font-size: 13px; font-weight: bold;">
+        🪙 Wallet Balance: <span id="profileCoins">500 Coins</span>
       </div>
     </div>
 
-    <!-- ADVANCE ROOM & USER MANAGEMENT OPTIONS -->
-    <div class="glass rounded-2xl p-4 space-y-3">
-      <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider">⚡ Advance Management Controls</h4>
-      
-      <div class="flex justify-between items-center py-2 border-b border-white/10">
-        <div>
-          <p class="text-sm font-semibold">🔒 Lock All Empty Seats</p>
-          <p class="text-[11px] text-gray-400">Only approved users can take mic</p>
-        </div>
-        <input id="toggleSeatLock" type="checkbox" onchange="toggleSetting('seatLock')" class="w-5 h-5 accent-cyan-400" />
-      </div>
-
-      <div class="flex justify-between items-center py-2 border-b border-white/10">
-        <div>
-          <p class="text-sm font-semibold">🔇 Auto-Mute New Speakers</p>
-          <p class="text-[11px] text-gray-400">Mute users automatically when they sit</p>
-        </div>
-        <input id="toggleAutoMute" type="checkbox" onchange="toggleSetting('autoMute')" class="w-5 h-5 accent-cyan-400" />
-      </div>
-
-      <div class="flex justify-between items-center py-2 border-b border-white/10">
-        <div>
-          <p class="text-sm font-semibold">🛡️ Room Entry Shield</p>
-          <p class="text-[11px] text-gray-400">Block guest accounts from entering room</p>
-        </div>
-        <input id="toggleGuestBlock" type="checkbox" onchange="toggleSetting('guestBlock')" class="w-5 h-5 accent-cyan-400" />
-      </div>
-
-      <button onclick="alert('Recharge Portal: Connect Supabase & UPI QR in Step 2!')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-purple-600/20 border border-amber-400/40 text-amber-300 text-xs font-bold mt-2">
-        💎 Recharge Coins / Agency Center
-      </button>
-    </div>
-  </div>
-
-  <!-- CREATE ROOM MODAL -->
-  <div id="createModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-    <div class="glass rounded-2xl p-5 w-full max-w-sm space-y-4">
-      <h3 class="text-lg font-bold text-amber-300">Create New Party Room</h3>
-      <input id="newRoomTitle" type="text" placeholder="Enter Room Name (e.g. Late Night Chill)" class="w-full p-3 rounded-xl bg-black/60 border border-purple-500/40 text-white" />
-      <div class="flex gap-2">
-        <button onclick="closeCreateModal()" class="w-1/2 py-2.5 rounded-xl bg-gray-800 text-gray-300 font-semibold">Cancel</button>
-  
+    
